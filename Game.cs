@@ -327,7 +327,12 @@ public abstract class Game
 		DeleteSavedReceivedMessages();
 	}
 
-	protected void Interrupt() => _interrupted = true;
+	protected void Interrupt()
+    {
+		_interrupted = true;
+		_waitHandle.Set();
+	}
+   
 
 	protected static IUser GetPlayer(ulong id) => Program.GetUser(id);
 
