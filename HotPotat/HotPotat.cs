@@ -44,6 +44,7 @@ public class HotPotat : Game
     protected override void Start()
     {
         _timerDuration = Prompt<int>(GamemasterID, AllowedChannels, true, "How long til potat detonation (in seconds)?");
+        while(_timerDuration <= 1) _timerDuration = Prompt<int>(GamemasterID, AllowedChannels, true, "The potat can't be detonated *that* fast, try again");
         _alive.AddRange(PlayerIDs);
         foreach (ulong id in _alive) _scores.Add(id, 0);
     }
