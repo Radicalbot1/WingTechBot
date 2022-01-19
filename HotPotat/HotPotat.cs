@@ -21,19 +21,24 @@ public class HotPotat : Game
 
     Dictionary<ulong, int> _scores = new();
 
-    public string[] potatCollect = { "has the potat!",  "is now a potat-er", "is no longer potat-less", "loves potats", "doesn't have the potat... lol jk", "has a high potat diet", "never skips potat day",
+    public string[] collectText = { "has the potat!",  "is now a potat-er", "is no longer potat-less", "loves potats", "doesn't have the potat... lol jk", "has a high potat diet", "never skips potat day",
             "leads the change in the potat eating challeng", "could eat potats fater", "joins the potat war", "plants the seeds for more potats", "hates tomats", "knows that potats are the best fruit",
             "found the golden potat", "slides into their potats", "eats the most healthy fruit", "sets up their children's future with potats", "steals the potat from their enemy's hands",
             "couldn't live without a potat", "slays demons with the help of the potat", "knows that the market cap of the potat is infinite", "has created the potat NFT", "knows the power of the potat side",
             "knows their parents love potats more then them", "would sell their soul for potats", "sails the seven seas for potats", "is the Dream Minecraft of potats", "has replaced their kidney with potats",
             "never skips potat day", "becomes potat-sexual", "married their favorite potat", "has discovered a new breed of potat!"};
 
-    public string[] roundText = { "Potat time is starting!", "Watch out! That potat's hot!", "Get your mouth's ready for... Hot Potat!", "Warning! Hot Potat inbound!", "Time for a new round of... Hot Potat" };
+    public string[] roundText = { "Potat time is starting!", "Watch out! That potat's hot!", "Get your mouths ready for... Hot Potat!", "Warning! Hot Potat inbound!", "Time for a new round of... Hot Potat" };
 
+    public string[] detonationText = { "had their carrer ended by the potat detonation", "has perished to the potat", "could not handle the raw power of a potat", "has accended due to the potat", 
+        "has left the mortal plane due to the potat", "has been consumed by the potat", "has failed to overcome the power of the potat", "ceased exiting because of the potat detonation", 
+        "had their life cut short due to a potat", "has been eviserated due to a potat", "can not eat another potat again", "never stood a chance against the potat", "potat-ed their last potat", 
+        "had an allergic reaction to the potat", "thought the potat was a vegetable", "thought eating another fruit would save them from death", "never stood a chance and is now dead", "is dead",
+        "is now a potat ghost", "has lost their taste buds due to the heat", "couldn't handle the heat of a potat"};
 
     protected override void Start()
     {
-        _timerDuration = Prompt<int>(GamemasterID, AllowedChannels, true, "How long til detonation (in seconds)?");
+        _timerDuration = Prompt<int>(GamemasterID, AllowedChannels, true, "How long til potat detonation (in seconds)?");
     }
 
     public override void RunGame()
@@ -61,7 +66,7 @@ public class HotPotat : Game
     {
         while (true)
         {
-            WriteLine($"{GetPlayer(_potatWielder)} {potatCollect[_random.Next(potatCollect.Length)]}");
+            WriteLine($"{GetPlayer(_potatWielder)} {collectText[_random.Next(collectText.Length)]}");
             try
             {
                 while (true)
@@ -98,7 +103,7 @@ public class HotPotat : Game
     private void OnDetonation(object source, ElapsedEventArgs e)
     {
         Console.WriteLine("reeee");
-        WriteLine($"The Potat has detonated, ending the career of {GetPlayer(_potatWielder).Username}");
+        WriteLine($"{detonationText[_random.Next(detonationText.Length)]} {GetPlayer(_potatWielder).Username}");
         _alive.Remove(_potatWielder);
         _dead.Add(_potatWielder);
         
