@@ -13,6 +13,7 @@ public class HotPotat : Game
 {
     private int _timerDuration;
     private System.Timers.Timer _timer;
+    private System.Timers.Timer _toHotTimer;
     private ulong _potatWielder;
     private Random _random = new();
 
@@ -72,6 +73,7 @@ public class HotPotat : Game
         while (true)
         {
             WriteLine($"{GetPlayer(_potatWielder)} {collectText[_random.Next(collectText.Length)]}");
+            ToHotTimer();
             try
             {
                 while (true)
@@ -80,6 +82,8 @@ public class HotPotat : Game
                     if (message.MentionedUserIds.Count == 1 && _alive.Contains(message.MentionedUserIds.First()))
                     {
                         _potatWielder = message.MentionedUserIds.First();
+                        _toHotTimer.Stop();
+                        _toHotTimer.Dispose();
                         break;
                     }
                     else if(message.MentionedUserIds.Count == 1 && _dead.Contains(message.MentionedUserIds.First()))
@@ -119,12 +123,22 @@ public class HotPotat : Game
 
     private void OnDetonation(object source, ElapsedEventArgs e)
     {
-        Console.WriteLine("reeee");
         WriteLine($"{detonationText[_random.Next(detonationText.Length)]} {GetPlayer(_potatWielder).Username}");
         _alive.Remove(_potatWielder);
         _dead.Add(_potatWielder);
         
         Interrupt();
+    }
+    
+    private void ToHotTimer()
+    {
+        // Create a timer with a two second interval.
+        _toHotTimer = new(5000);
+        // Hook up the Elapsed event for the timer. 
+        _toHotTimer.Elapsed += OnDetonation;
+        _toHotTimer.AutoReset = false;
+        _toHotTimer.Enabled = true;
+        _toHotTimer.Start();
     }
 
     private void GameOver()
