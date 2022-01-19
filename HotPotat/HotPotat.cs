@@ -36,6 +36,11 @@ public class HotPotat : Game
         "had an allergic reaction to the potat", "thought the potat was a vegetable", "thought eating another fruit would save them from death", "never stood a chance and is now dead", "is dead",
         "is now a potat ghost", "has lost their taste buds due to the heat", "couldn't handle the heat of a potat"};
 
+    public string[] deadText = { "You can't pass to a dead potat-er", "That person is nothing but bones", "Dust can't play Hot Potat", "That person already bit the potat", "No messing with the dead",
+        "Such actions against the dead are unnaceptable in this game", "Only bones remain...", "Their tombstone haunts you", "Let loved ones rest", "They are already full of potat", 
+        "They have no stomach to put the potat in", "Their fate was already sealed", "They already summited to the potat", "Their memory lives on but not their potat", "Try someone alive next time",
+        "They are healthy enough", "Don't give food to a full person", "I would say nobody can have enough but...", "Could you pay attention to who is alive?", "It stuck to your fingers",
+        "Imagine not knowing who is still playing Hot Potat", "Cringe, Pass to someone who hasen't eaten a potat", "We're not graverobbers, pass it to someone alive"};
     protected override void Start()
     {
         _timerDuration = Prompt<int>(GamemasterID, AllowedChannels, true, "How long til potat detonation (in seconds)?");
@@ -75,6 +80,10 @@ public class HotPotat : Game
                     {
                         _potatWielder = message.MentionedUserIds.First();
                         break;
+                    }
+                    else if(message.MentionedUserIds.Count == 1 && _dead.Contains(message.MentionedUserIds.First()))
+                    {
+                        WriteLine(deadText[_random.Next(deadText.Length)]);
                     }
                     else if (message.MentionedUserIds.Count > 1)
                     {
