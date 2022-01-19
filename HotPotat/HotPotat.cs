@@ -57,7 +57,7 @@ public class HotPotat : Game
 
         while(_alive.Count > 1)
         {
-            RunTimer(_timerDuration);
+            RunTimer(_timer, _timerDuration);
             PlayRound();
 
             _potatWielder = GetPlayer(_alive[_random.Next(_alive.Count)]).Id;
@@ -73,7 +73,7 @@ public class HotPotat : Game
         while (true)
         {
             WriteLine($"{GetPlayer(_potatWielder)} {collectText[_random.Next(collectText.Length)]}");
-            RunTimer(3);
+            RunTimer(_toHotTimer, 3);
             try
             {
                 while (true)
@@ -110,15 +110,15 @@ public class HotPotat : Game
             }
         }
     }
-    private void RunTimer(int duration)
+    private void RunTimer(System.Timers.Timer timer, int duration)
     {
         // Create a timer with a two second interval.
-        _timer = new(duration * 1000);
+        timer = new(duration * 1000);
         // Hook up the Elapsed event for the timer. 
-        _timer.Elapsed += OnDetonation;
-        _timer.AutoReset = false;
-        _timer.Enabled = true;
-        _timer.Start();
+        timer.Elapsed += OnDetonation;
+        timer.AutoReset = false;
+        timer.Enabled = true;
+        timer.Start();
     }
 
     private void OnDetonation(object source, ElapsedEventArgs e)
