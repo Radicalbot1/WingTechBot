@@ -86,6 +86,14 @@ public class HotPotat : Game
                     {
                         WriteLine(deadText[_random.Next(deadText.Length)]);
                     }
+                    else if (message.MentionedUserIds.Count == 1 && message.MentionedUserIds.First() == GamemasterID)
+                    {
+                        WriteLine("You can't give me the hot potat fool!");
+                    }
+                    else if(message.MentionedUserIds.Count == 1)
+                    {
+                        WriteLine("They are not playing Hot Potat! Now both of you are cringe");
+                    }
                     else if (message.MentionedUserIds.Count > 1)
                     {
                         WriteLine("There is only one potat comrade! Try again, better this time");
