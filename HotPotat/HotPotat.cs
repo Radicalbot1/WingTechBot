@@ -18,6 +18,19 @@ public class HotPotat : Game
 
     List<ulong> _alive = new();
     List<ulong> _dead = new();
+
+    Dictionary<ulong, int> _scores = new();
+
+    public string[] potatCollect = { "has the potat!",  "is now a potat-er", "is no longer potat-less", "loves potats", "doesn't have the potat... lol jk", "has a high potat diet", "never skips potat day",
+            "leads the change in the potat eating challeng", "could eat potats fater", "joins the potat war", "plants the seeds for more potats", "hates tomats", "knows that potats are the best fruit",
+            "found the golden potat", "slides into their potats", "eats the most healthy fruit", "sets up their children's future with potats", "steals the potat from their enemy's hands",
+            "couldn't live without a potat", "slays demons with the help of the potat", "knows that the market cap of the potat is infinite", "has created the potat NFT", "knows the power of the potat side",
+            "knows their parents love potats more then them", "would sell their soul for potats", "sails the seven seas for potats", "is the Dream Minecraft of potats", "has replaced their kidney with potats",
+            "never skips potat day", "becomes potat-sexual", "married their favorite potat", "has discovered a new breed of potat!"};
+
+    public string[] roundText = { "Potat time is starting!", "Watch out! That potat's hot!", "Get your mouth's ready for... Hot Potat!", "Warning! Hot Potat inbound!", "Time for a new round of... Hot Potat" };
+
+
     protected override void Start()
     {
         _timerDuration = Prompt<int>(GamemasterID, AllowedChannels, true, "How long til detonation (in seconds)?");
@@ -26,6 +39,7 @@ public class HotPotat : Game
     public override void RunGame()
     {
         _alive.AddRange(PlayerIDs);
+        foreach (ulong id in _alive) _scores.Add(id, 0);
 
         _potatWielder = _alive[_random.Next(_alive.Count)];
         WriteLine("Start Game!");
@@ -34,8 +48,10 @@ public class HotPotat : Game
         {
             RunTimer();
             PlayRound();
+
             _potatWielder = GetPlayer(_alive[_random.Next(_alive.Count)]).Id;
-            WriteLine($"New round everyone!");
+            foreach(ulong id in _alive) _scores[id] += 1;
+            WriteLine(roundText[_random.Next(roundText.Length)]);
         }
 
         GameOver();
@@ -45,7 +61,7 @@ public class HotPotat : Game
     {
         while (true)
         {
-            WriteLine($"{GetPlayer(_potatWielder)} has the potat!");
+            WriteLine($"{GetPlayer(_potatWielder)} {potatCollect[_random.Next(potatCollect.Length)]}");
             try
             {
                 while (true)
@@ -92,6 +108,14 @@ public class HotPotat : Game
     private void GameOver()
     {
         WriteLine($"{GetPlayer(_alive.First())} has won Hot Potat");
+        WriteLine("\n\n Here's the scores!\n\n");
+
+        foreach(ulong id in _alive)
+        {
+            WriteLine($"{GetPlayer(id).Username}: {_scores[id]}");
+        }
+
+        WriteLine("\n\n");
         bool yn = PromptAnyYN(PromptMode.Any, message: "would you like to play again?");
         if (yn) RunGame();
         else Shutdown();
