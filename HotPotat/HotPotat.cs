@@ -13,7 +13,7 @@ public class HotPotat : Game
 {
     private int _timerDuration;
     private System.Timers.Timer _timer;
-    private System.Timers.Timer _toHotTimer;
+    private System.Timers.Timer _tooHotTimer;
     private ulong _potatWielder;
     private Random _random = new();
 
@@ -31,7 +31,7 @@ public class HotPotat : Game
 
     public string[] roundText = { "Potat time is starting!", "Watch out! That potat's hot!", "Get your mouths ready for... Hot Potat!", "Warning! Hot Potat inbound!", "Time for a new round of... Hot Potat" };
 
-    public string[] detonationText = { "had their carrer ended by the potat detonation", "has perished to the potat", "could not handle the raw power of a potat", "has accended due to the potat", 
+    public string[] detonationText = { "had their career ended by the potat detonation", "has perished to the potat", "could not handle the raw power of a potat", "has accended due to the potat", 
         "has left the mortal plane due to the potat", "has been consumed by the potat", "has failed to overcome the power of the potat", "ceased exiting because of the potat detonation", 
         "had their life cut short due to a potat", "has been eviserated due to a potat", "can not eat another potat again", "never stood a chance against the potat", "potat-ed their last potat", 
         "had an allergic reaction to the potat", "thought the potat was a vegetable", "thought eating another fruit would save them from death", "never stood a chance and is now dead", "is dead",
@@ -46,12 +46,12 @@ public class HotPotat : Game
     {
         _timerDuration = Prompt<int>(GamemasterID, AllowedChannels, true, "How long til potat detonation (in seconds)?");
         while(_timerDuration <= 1) _timerDuration = Prompt<int>(GamemasterID, AllowedChannels, true, "The potat can't be detonated *that* fast, try again");
-        _alive.AddRange(PlayerIDs);
-        foreach (ulong id in _alive) _scores.Add(id, 0);
     }
 
     public override void RunGame()
     {
+        _alive.AddRange(PlayerIDs);
+        foreach (ulong id in _alive) if(!_scores.ContainsKey(id))_scores.Add(id, 0);
         _potatWielder = _alive[_random.Next(_alive.Count)];
         WriteLine("Start Game!");
 
@@ -60,8 +60,8 @@ public class HotPotat : Game
             RunTimer(_timer, _timerDuration);
             PlayRound();
 
-            _potatWielder = GetPlayer(_alive[_random.Next(_alive.Count)]).Id;
             foreach(ulong id in _alive) _scores[id] += 1;
+            if (_alive.Count == 1) break;
             WriteLine(roundText[_random.Next(roundText.Length)]);
         }
 
@@ -70,10 +70,10 @@ public class HotPotat : Game
 
     private void PlayRound()
     {
+        RunTimer(_tooHotTimer, 10);
         while (true)
         {
             WriteLine($"{GetPlayer(_potatWielder)} {collectText[_random.Next(collectText.Length)]}");
-            RunTimer(_toHotTimer, 3);
             try
             {
                 while (true)
@@ -82,15 +82,15 @@ public class HotPotat : Game
                     if (message.MentionedUserIds.Count == 1 && _alive.Contains(message.MentionedUserIds.First()))
                     {
                         _potatWielder = message.MentionedUserIds.First();
-                        _toHotTimer.Stop();
-                        _toHotTimer.Dispose();
+                        if(_tooHotTimer != null)_tooHotTimer.Enabled = false;
+                        if(_timer != null)_timer.Enabled = false;
                         break;
                     }
                     else if(message.MentionedUserIds.Count == 1 && _dead.Contains(message.MentionedUserIds.First()))
                     {
                         WriteLine(deadText[_random.Next(deadText.Length)]);
                     }
-                    else if (message.MentionedUserIds.Count == 1 && message.MentionedUserIds.First() == GamemasterID)
+                    else if (message.MentionedUserIds.Count == 1 && message.MentionedUserIds.First() == Program.BotID)
                     {
                         WriteLine("You can't give me the hot potat fool!");
                     }
@@ -123,7 +123,9 @@ public class HotPotat : Game
 
     private void OnDetonation(object source, ElapsedEventArgs e)
     {
-        WriteLine($"{detonationText[_random.Next(detonationText.Length)]} {GetPlayer(_potatWielder).Username}");
+        WriteLine($"{GetPlayer(_potatWielder).Username} {detonationText[_random.Next(detonationText.Length)]}");
+        if (_tooHotTimer != null) _tooHotTimer.Enabled = false;
+        if (_timer != null) _timer.Enabled = false;
         _alive.Remove(_potatWielder);
         _dead.Add(_potatWielder);
         
@@ -140,10 +142,11 @@ public class HotPotat : Game
             WriteLine($"{GetPlayer(id).Username}: {_scores[id]}");
         }
 
-        WriteLine("\n\n");
+        //WriteLine("__\n\n__");
         bool yn = PromptAnyYN(PromptMode.Any, message: "would you like to play again?");
         if (yn) RunGame();
         else Shutdown();
+        WriteLine("Game End");
     }
 }
 
