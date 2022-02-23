@@ -12,7 +12,6 @@ using System.Threading;
 public class HotPotat : Game
 {
     private int _timerDuration;
-    private System.Timers.Timer _timer;
     private System.Timers.Timer _tooHotTimer;
     private ulong _potatWielder;
     private Random _random = new();
@@ -53,11 +52,10 @@ public class HotPotat : Game
         _alive.AddRange(PlayerIDs);
         foreach (ulong id in _alive) if(!_scores.ContainsKey(id))_scores.Add(id, 0);
         _potatWielder = _alive[_random.Next(_alive.Count)];
-        WriteLine("Start Game!");
+        WriteLine("Welcome to HOT POTAT comrades, let us Start Game!__\n\n__");
 
         while(_alive.Count > 1)
         {
-            RunTimer(_timer, _timerDuration);
             PlayRound();
 
             foreach(ulong id in _alive) _scores[id] += 1;
@@ -70,10 +68,11 @@ public class HotPotat : Game
 
     private void PlayRound()
     {
-        RunTimer(_tooHotTimer, 10);
         while (true)
         {
             WriteLine($"{GetPlayer(_potatWielder)} {collectText[_random.Next(collectText.Length)]}");
+            System.Timers.Timer _timer = new();
+            RunTimer(_timer, _timerDuration);
             try
             {
                 while (true)
@@ -82,8 +81,6 @@ public class HotPotat : Game
                     if (message.MentionedUserIds.Count == 1 && _alive.Contains(message.MentionedUserIds.First()))
                     {
                         _potatWielder = message.MentionedUserIds.First();
-                        if(_tooHotTimer != null)_tooHotTimer.Enabled = false;
-                        if(_timer != null)_timer.Enabled = false;
                         break;
                     }
                     else if(message.MentionedUserIds.Count == 1 && _dead.Contains(message.MentionedUserIds.First()))
@@ -93,6 +90,10 @@ public class HotPotat : Game
                     else if (message.MentionedUserIds.Count == 1 && message.MentionedUserIds.First() == Program.BotID)
                     {
                         WriteLine("You can't give me the hot potat fool!");
+                    }
+                    else if (message.MentionedUserIds.Count == 1 && message.MentionedUserIds.First() == _potatWielder)
+                    {
+                        WriteLine("You can't give yourself the hot potat fool! Thats cheating!");
                     }
                     else if(message.MentionedUserIds.Count == 1)
                     {
@@ -112,6 +113,7 @@ public class HotPotat : Game
     }
     private void RunTimer(System.Timers.Timer timer, int duration)
     {
+        timer = new();
         // Create a timer with a two second interval.
         timer = new(duration * 1000);
         // Hook up the Elapsed event for the timer. 
@@ -124,8 +126,8 @@ public class HotPotat : Game
     private void OnDetonation(object source, ElapsedEventArgs e)
     {
         WriteLine($"{GetPlayer(_potatWielder).Username} {detonationText[_random.Next(detonationText.Length)]}");
-        if (_tooHotTimer != null) _tooHotTimer.Enabled = false;
-        if (_timer != null) _timer.Enabled = false;
+        //if (_tooHotTimer != null) _tooHotTimer.Enabled = false;
+        //if (_timer != null) _timer.Enabled = false;
         _alive.Remove(_potatWielder);
         _dead.Add(_potatWielder);
         
@@ -134,8 +136,8 @@ public class HotPotat : Game
 
     private void GameOver()
     {
-        WriteLine($"{GetPlayer(_alive.First())} has won Hot Potat");
-        WriteLine("\n\n Here's the scores!\n\n");
+        WriteLine($"{GetPlayer(_alive.First())} has won Hot Potat!");
+        WriteLine("\n\n Here's the scores:\n\n");
 
         foreach(ulong id in _alive)
         {
@@ -143,10 +145,14 @@ public class HotPotat : Game
         }
 
         //WriteLine("__\n\n__");
-        bool yn = PromptAnyYN(PromptMode.Any, message: "would you like to play again?");
+        bool yn = PromptAnyYN(PromptMode.Any, message: "__\nWould you like to play again?");
         if (yn) RunGame();
-        else Shutdown();
-        WriteLine("Game End");
+        else
+        {
+            WriteLine("The Game has concluded, thank you for playing comrads.");
+            Shutdown();
+        }
+        
     }
 }
 
